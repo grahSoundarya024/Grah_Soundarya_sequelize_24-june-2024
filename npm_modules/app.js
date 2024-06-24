@@ -44,7 +44,7 @@ app.use("/product", ProductRouter);
 app.use("/orders", OrderRouter);
 app.use("/payment", PaymentRouter)
 
-const port = 3001;
-app.listen(port, () => {
+// const port = 3001;
+app.listen(3001, () => {
    console.log("Server started....");
 })

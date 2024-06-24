@@ -1,5 +1,5 @@
 import express from 'express';
-import {roomType , video,design_images ,viewalldesign,viewAllRoomType,design_feedback,favourite_design,addDesignVideo,addDesignImages,designDetails,allFavouriteList,roomTypeExcel,getCategoryone,VideosByPro_id} from '../CONTROLLER/design.controller.js';
+import {roomType , video,design_images ,viewalldesign,viewAllRoomType,design_feedback,favourite_design,addDesignVideo,addDesignImages,designDetails,allFavouriteList,roomTypeExcel,getCategoryone,VideosByPro_id,getDesignByRoomType} from '../CONTROLLER/design.controller.js';
 import multer from 'multer';
 
 const roomType_img = multer({dest: "RoomType_img/images"})
@@ -20,12 +20,12 @@ router.post("/design_feedback",design_feedback );
 router.post("/addToFavorite",favourite_design);
 router.post("/addDesignVideo",upload.single ("excelFile"),addDesignVideo);
 router.post("/addDesignImages",upload.single("excelFile"),addDesignImages);
-router.post("/designbyRoomType",designDetails);   // get
+router.post("/designbyProfessional",designDetails);   // get
 router.post("/allFavouriteList",allFavouriteList);
 router.get("/getCategoryone",getCategoryone)
 router.get("/AllVideo",VideosByPro_id);
 
-// router.get("/DesignByRoomType" , getDesignByRoomType)  
+router.post("/DesignByRoomType", getDesignByRoomType)  // ic omment i 
 
 // extra
 // router.post ("/video",video)

@@ -196,9 +196,11 @@ export const addDesignImages = async (request, response, next) => {
 
 export const addDesignVideo = async (request, response, next) => { // FILTER DUPLICACY CODE
     try {
-        if (!request.file) {
+        console.log(request.file);
+        console.log(request.body);
+        if (!request.file)
             return response.status(400).json({ error: 'No file uploaded' });
-        }
+        
         if (
             request.file.mimetype !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' &&
             request.file.mimetype !== 'application/vnd.ms-excel'
@@ -471,54 +473,132 @@ export const viewDesignById = async (request, response, next) => {
     }
 };
 //===============================================================================================================
-export const getDesignByRoomType = async (request, response, next) => {
-    try {
-        const roomType = request.body.roomType
-        console.log("roomType " + roomType)
+// export const getDesignByRoomType = async (request, response, next) => {
+//     try {
+//         const roomType = request.body.roomType
+//         console.log("roomType " + roomType)
 
-        if (!roomType) {
-            return response.status(400).json({ error: "Room type is required in the request." });
-        }
-        let findRoomType = await RoomType.findOne({ where: { roomType: roomType } })
+//         if (!roomType) {
+//             return response.status(400).json({ error: "Room type is required in the request." });
+//         }
+//         let findRoomType = await RoomType.findOne({ where: { roomType: roomType } })
 
-        if (!findRoomType) {
-            return response.status(404).json({ message: "Room type not found." });
-        }
+//         if (!findRoomType) {
+//             return response.status(404).json({ message: "Room type not found." });
+//         }
 
-        const designs = await Design.findAll({
-            where: { roomType_id: findRoomType.roomType_id },
+//         const designs = await Design.findAll({
+//             where: { roomType_id: findRoomType.roomType_id },
 
-            include: [
-                {
-                    model: Design_image,
-                    attributes: ['image_url', 'description']
-                },
-                {
-                    model: RoomType,
-                    attributes: ['roomType'],
-                }
-            ]
-        });
+//             include: [
+//                 {
+//                     model: Design_image,
+//                     attributes: ['image_url', 'description']
+//                 },
+//                 {
+//                     model: RoomType,
+//                     attributes: ['roomType'],
+//                 }
+//             ]
+//         });
 
 
-        if (designs.length === 0) {
-            return response.status(404).json({ message: "No designs found for the specified room type." });
-        }
+//         if (designs.length === 0) {
+//             return response.status(404).json({ message: "No designs found for the specified room type." });
+//         }
 
-        const responseData = designs.map(design => ({
-            image_url: design.Design_mages && design.Design_images.length > 0 ? design.Design_images[0].image_url : null,
-            roomType: design.RoomType ? design.RoomType.roomType : null,
-            description: design.Design_images && design.Design_images.length > 0 ? design.Design_images[0].description : null
+//         const responseData = designs.map(design => ({
+//             image_url: design.Design_mages && design.Design_images.length > 0 ? design.Design_images[0].image_url : null,
+//             roomType: design.RoomType ? design.RoomType.roomType : null,
+//             description: design.Design_images && design.Design_images.length > 0 ? design.Design_images[0].description : null
+//         }));
+
+//         return response.status(200).json({ data: responseData });
+
+//     } catch (error) {
+//         console.log(error)
+//         return response.status(500).json({ error: "Internal server error" });
+
+//     }
+// }
+
+
+
+export const    getDesignByRoomType = async (request, response, next) => {
+    const { roomType } = request.body; 
+    console.log(roomType);
+    
+    Design.findAll({
+        include: [
+            {
+                model: Design_image,
+                attributes: ['image_url', 'description', 'designImg_id'],
+            },
+            {
+                model: RoomType,
+                attributes: ['roomType'],
+                where: { roomType }, 
+            },
+        ],
+    })
+    .then((designs) => {
+        console.log('Designs:', designs);
+    
+        const formattedData = designs.map((design) => ({
+            image_urls: design.design_images.map((image) => image.image_url),
+            descriptions: design.design_images.map((image) => image.description),
+            designImg_ids: design.design_images.map((image) => image.designImg_id),
+            roomType: design.roomType ? design.roomType.roomType : null,
         }));
-
-        return response.status(200).json({ data: responseData });
-
-    } catch (error) {
-        console.log(error)
-        return response.status(500).json({ error: "Internal server error" });
-
-    }
-}
+    
+        console.log('Formatted Data:', formattedData);
+    
+        response.status(200).json(formattedData);
+    })
+    .catch((error) => {
+        console.error('Error fetching data:', error);
+        response.status(500).send('Error fetching data');
+    });
+        };
+// export const getDesignByRoomType = async (req, res, next) => {
+//     const { roomType } = req.body; 
+//     console.log(roomType);
+    
+//     try {
+//       const designs = await Design.findAll({
+//         include: [
+//           {
+//             model: Design_image,
+//             attributes: ['image_url', 'description', 'designImg_id'],
+//           },
+//           {
+//             model: RoomType,
+//             attributes: ['roomType'],
+//             where: { roomType }, 
+//           },
+//         ],
+//       });
+      
+//       console.log('Designs:', typeof designs);
+  
+//       const formattedData = designs.map((design) => ({
+//         image_urls: design.Design_images.map((image) => image.image_url),
+//         descriptions: design.Design_images.map((image) => image.description),
+//         designImg_ids: design.Design_images.map((image) => image.designImg_id),
+//         roomType: design.RoomType ? design.RoomType.roomType : null,
+//         video: design.video, // Ensure to include other necessary fields
+//         title: design.title,
+//         design_id: design.design_id,
+//       }));
+  
+//       console.log('Formatted Data:', formattedData);
+  
+//       return res.status(200).json(formattedData);
+//     } catch (error) {
+//       console.error('Error fetching data:', error);
+//       return res.status(401).send('Error fetching data' , error);
+//     }
+//   };
 //===============================================================================================================
 
 export const viewAllRoomType = async (request, response, next) => {

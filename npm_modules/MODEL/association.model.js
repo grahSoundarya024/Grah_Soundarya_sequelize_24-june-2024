@@ -102,6 +102,4 @@ Favourite_product.belongsTo(User, { foreignKey: 'user_id' });
 Product.hasMany(Favourite_product, { foreignKey: 'product_id' });
 Favourite_product.belongsTo(Product, { foreignKey: 'product_id' });
 
-
-
 export {Cart,User,CartItem,Product,Design,Design_image,OrderItems,Orders,RoomType,Subscription,PaymentData,ProductFeedback,DesignFav,Favourite_product}

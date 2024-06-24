@@ -258,7 +258,7 @@ export const subscribedList  = async(request,response,next)=>{
 //     return response.status(500).json({ Error: "Internal server error" });
 //   }
 // }; 
- //above code work fine for payment 1sub 1pay
+//  above code work fine for payment 1sub 1pay
 
  export const subscription = async (request, response, next) => {
   try {
